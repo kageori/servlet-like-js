@@ -12,6 +12,10 @@
         <servlet-name>ListDisplay</servlet-name>
         <servlet-class>app.list-display.ListDisplayServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>DispatcherServlet</servlet-name>
+        <servlet-class>app.servlet.DispatcherServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LoginDisplay</servlet-name>
         <url-pattern>/login</url-pattern>
@@ -23,5 +27,9 @@
     <servlet-mapping>
         <servlet-name>ListDisplay</servlet-name>
         <url-pattern>/list</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DispatcherServlet</servlet-name>
+        <url-pattern>*</url-pattern>
     </servlet-mapping>
 </web-app>
