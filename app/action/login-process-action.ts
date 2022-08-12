@@ -1,9 +1,9 @@
-import {HttpServlet} from "@servlet/http-servlet";
-import {HttpRequest} from "@servlet/request";
-import {HttpResponse} from "@servlet/response";
+import { HttpRequest } from '@servlet/request'
+import { HttpResponse } from '@servlet/response'
+import {Action} from './action'
 
-export class LoginProcessServlet extends HttpServlet {
-    protected async doPost(req: HttpRequest, res: HttpResponse): Promise<void> {
+export class LoginProcessAction extends Action {
+    async execute(req: HttpRequest, res: HttpResponse): Promise<void> {
         const loginId = req.getParameter('loginId')
         const password = req.getParameter('password')
 
@@ -23,6 +23,6 @@ export class LoginProcessServlet extends HttpServlet {
             return await req.getRequestDispatcher('/login').forward(req, res)
         }
 
-        res.sendRedirect(req.getContextPath() + '/list')
+        return res.sendRedirect(req.getContextPath() + '/list')
     }
 }

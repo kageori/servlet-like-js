@@ -3,6 +3,8 @@ import {HttpRequest} from "@servlet/request";
 import {HttpResponse} from "@servlet/response";
 import {Action} from "./action/action"
 import {LoginAction} from "./action/login-action"
+import {LoginProcessAction} from "./action/login-process-action"
+import {ListAction} from "./action/list-action"
 import { NotFound, ServletError, InternalServerError } from "@servlet/error";
 
 export class Todo {
@@ -12,6 +14,10 @@ export class Todo {
 export class DispatcherServlet extends HttpServlet {
     protected async doGet(req: HttpRequest, res: HttpResponse): Promise<void> {
        return this.execute(req,res)
+    }
+
+    protected async doPost(req: HttpRequest, res: HttpResponse): Promise<void> {
+        return this.execute(req,res)
     }
 
     private async execute(req: HttpRequest, res: HttpResponse): Promise<void>{
@@ -40,6 +46,10 @@ export class DispatcherServlet extends HttpServlet {
         switch (path) {
             case "/login":
                 return new LoginAction()
+            case "/login-process":
+                return new LoginProcessAction()
+            case "/list":
+                return new ListAction()
             default:
                 return null
         }
