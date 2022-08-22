@@ -1,5 +1,5 @@
 import {Renderer} from "@servlet/renderer";
-import {Todo} from "@app/list-display";
+import {Todo} from "@app/action/list-action";
 
 interface ListAttr {
     todoList: Todo[]

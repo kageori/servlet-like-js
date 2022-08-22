@@ -6,12 +6,27 @@ import {LoginAction} from "./action/login-action"
 import {LoginProcessAction} from "./action/login-process-action"
 import {ListAction} from "./action/list-action"
 import { NotFound, ServletError, InternalServerError } from "@servlet/error";
+import { Properties } from "@util/properties";
+import { ClassLoader, Class } from "@util/class";
+
 
 export class Todo {
     constructor(readonly title: string, readonly comment: string) {}
 }
 
 export class DispatcherServlet extends HttpServlet {
+    private route!: Properties
+
+    public async init(): Promise<void> {
+        this.route = new Properties()
+        try {
+            const cl: ClassLoader = this.getClass().getClassLoader()
+            this.route.load(await cl.getResourceAsStream("route.properties"))
+        } catch (e) {
+            throw new ServletError("route.propertiesが読み込めません", e)
+        }
+    }
+
     protected async doGet(req: HttpRequest, res: HttpResponse): Promise<void> {
        return this.execute(req,res)
     }
@@ -22,7 +37,7 @@ export class DispatcherServlet extends HttpServlet {
 
     private async execute(req: HttpRequest, res: HttpResponse): Promise<void>{
         const path = req.getRequestURI().substring(req.getContextPath().length)
-        const action: Action|null = this.findAction(path)
+        const action: Action|null = await this.findAction(path)
         if(action === null){
             res.sendError(NotFound)
         } else {
@@ -42,16 +57,13 @@ export class DispatcherServlet extends HttpServlet {
         }
     }
 
-    private findAction(path: string): Action|null {
-        switch (path) {
-            case "/login":
-                return new LoginAction()
-            case "/login-process":
-                return new LoginProcessAction()
-            case "/list":
-                return new ListAction()
-            default:
-                return null
+    private async findAction(path: string): Promise<Action|null> {
+        const className: string = this.route.getProperty(path)
+        try {
+            const clazz = await Class.forName(className)
+            return clazz.getDeclaredConstructor().newInstance()
+        } catch (e) {
+            throw new ServletError("アクションの生成に失敗しました", e)
         }
     }
 
