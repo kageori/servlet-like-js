@@ -7,13 +7,13 @@ export class Todo {
 }
 
 export class ListAction extends Action {
-    execute(req: HttpRequest, res: HttpResponse): Promise<void> {
+    execute(): Promise<void> {
         const todoList: Todo[] = [
             new Todo('原稿を仕上げる', '締め切りは6/1'),
             new Todo('髪を切る', 'パーマかけようかな'),
         ]
 
-        req.setAttribute('todoList', todoList)
-        return this.forward(req, res, '/list')
+        this.req.setAttribute('todoList', todoList)
+        return this.forward('/list')
     }
 }

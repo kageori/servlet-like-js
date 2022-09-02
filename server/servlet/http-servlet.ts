@@ -37,7 +37,7 @@ export abstract class HttpServlet {
     }
 
     protected getClass() {
-        return new Class()
+        return new Class(this.constructor as new (...args: any[]) => any)
     }
 }
 

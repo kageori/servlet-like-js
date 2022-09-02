@@ -7,12 +7,17 @@ export class Class {
     private static get loader() {
         return new ClassLoader()
     }
-    static forName(name: string): Promise<MetaClass> {
+    static forName(name: string): Promise<Class> {
         return this.loader.load(name)
     }
 
+    constructor(private readonly cons: Constructor) {}
+
     getClassLoader(): ClassLoader {
         return Class.loader
+    }
+    getDeclaredConstructor(): DeclaredConstructor {
+        return new DeclaredConstructor(this.cons)
     }
 }
 
@@ -26,23 +31,14 @@ class DeclaredConstructor {
     }
 }
 
-export class MetaClass {
-    constructor(private readonly cons: Constructor) {
-    }
-
-    getDeclaredConstructor(): DeclaredConstructor {
-        return new DeclaredConstructor(this.cons)
-    }
-}
-
 export class ClassLoader {
-    async load(targetPath: string): Promise<MetaClass> {
+    async load(targetPath: string): Promise<Class> {
         const [modPath, name] = tailAndRest(targetPath.split('.'))
         const mod = await import(path.resolve(root, ...modPath))
         const klass = mod[name]
 
         if (klass !== undefined) {
-            return new MetaClass(klass)
+            return new Class(klass)
         }
         else {
             throw new Error(`${targetPath}#${name} not found`)

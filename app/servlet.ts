@@ -28,7 +28,7 @@ export class DispatcherServlet extends HttpServlet {
     }
 
     protected async doGet(req: HttpRequest, res: HttpResponse): Promise<void> {
-       return this.execute(req,res)
+        return this.execute(req,res)
     }
 
     protected async doPost(req: HttpRequest, res: HttpResponse): Promise<void> {
@@ -37,12 +37,13 @@ export class DispatcherServlet extends HttpServlet {
 
     private async execute(req: HttpRequest, res: HttpResponse): Promise<void>{
         const path = req.getRequestURI().substring(req.getContextPath().length)
-        const action: Action|null = await this.findAction(path)
+        const action: Action|null = await this.findAction(req, res, path)
+
         if(action === null){
             res.sendError(NotFound)
         } else {
             try {
-                action.execute(req,res)
+                action.execute()
             } catch (error) {
                 if (error instanceof ServletError) {
                     throw error
@@ -57,11 +58,11 @@ export class DispatcherServlet extends HttpServlet {
         }
     }
 
-    private async findAction(path: string): Promise<Action|null> {
+    private async findAction(req: HttpRequest, res: HttpResponse, path: string): Promise<Action|null> {
         const className: string = this.route.getProperty(path)
         try {
             const clazz = await Class.forName(className)
-            return clazz.getDeclaredConstructor().newInstance()
+            return clazz.getDeclaredConstructor().newInstance(req, res)
         } catch (e) {
             throw new ServletError("アクションの生成に失敗しました", e)
         }
