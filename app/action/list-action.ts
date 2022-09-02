@@ -14,6 +14,6 @@ export class ListAction extends Action {
         ]
 
         req.setAttribute('todoList', todoList)
-        return req.getRequestDispatcher('/list').forward(req, res)
+        return this.forward(req, res, '/list')
     }
 }

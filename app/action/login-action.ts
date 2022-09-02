@@ -4,6 +4,6 @@ import {Action} from './action'
 
 export class LoginAction extends Action {
     execute(req: HttpRequest, res: HttpResponse): Promise<void> {
-        return req.getRequestDispatcher('/login').forward(req, res)
+        return this.forward(req, res, '/login')
     }
 }
